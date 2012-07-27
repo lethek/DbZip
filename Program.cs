@@ -46,7 +46,7 @@ namespace DbZip
 					//BACKUP DATABASE
 					string backupFileName;
 					using (new GlobalMutex()) {
-						Log.Info("Backing up: [{0}].[{1}]", builder.DataSource, builder.InitialCatalog);
+						Log.Info("Backing up: [{0}].[{1}] ({2})", builder.DataSource, options.Database, options.TransactionLogBackup ? "TRANSACTION-LOG" : "FULL");
 						timer.Start();
 
 						var backupTask = new BackupTask(
