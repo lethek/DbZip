@@ -39,11 +39,11 @@ namespace DbZip
 
 				//Build SQL Server connection-string from command-line options
 				var builder = new SqlConnectionStringBuilder {
-					DataSource = options.DataSource ?? "localhost",
-					UserID = options.UserID ?? "",
-					Password = options.Password ?? "",
+					DataSource = options.Server ?? "localhost",
+					InitialCatalog = options.Database,
 					IntegratedSecurity = options.IntegratedSecurity,
-					InitialCatalog = options.InitialCatalog
+					UserID = options.UserID ?? "",
+					Password = options.Password ?? ""
 				};
 
 
@@ -102,7 +102,7 @@ namespace DbZip
 
 			} catch (Exception ex) {
 				Log.Error(ex.Message, ex);
-				Console.Error.WriteLine("ERROR: " + ex.Message);
+				Console.Error.WriteLine(ex.Message);
 				return 1;
 			}
 
