@@ -2,15 +2,17 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using CommandLine.Text;
+
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DbZip")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Command line tool to backup an SQL Server database, zip the backup file, verify the zip, then delete the original backup.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DbZip")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCopyright("Copyright © Michael Monsour 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -34,4 +36,6 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0")]
+[assembly: AssemblyInformationalVersion("1.0")]
+
+[assembly: AssemblyUsage("Usage: DbZip [-D databaseName] [-S serverAddress] [-U userID] [-P password]")]

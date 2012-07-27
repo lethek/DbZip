@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 using CommandLine;
 
@@ -19,7 +17,7 @@ namespace DbZip
 	class Program
 	{
 
-		public static int Main(string[] args)
+		public static void Main(string[] args)
 		{
 			try {
 				//Set base-priority of the process so it hopefully doesn't interfere too much with SQL Server
@@ -30,20 +28,16 @@ namespace DbZip
 				var options = new CommandLineOptions();
 				var parser = new CommandLineParser(new CommandLineParserSettings(false, true, Console.Error));
 				if (!parser.ParseArguments(args, options)) {
-					Environment.Exit(1);
+					Environment.Exit(ERROR_BAD_ARGUMENTS);
 				}
-				if (String.IsNullOrEmpty(options.UserID) && String.IsNullOrEmpty(options.Password)) {
-					options.IntegratedSecurity = true;
-				}
-
 
 				//Build SQL Server connection-string from command-line options
+				bool useIntegratedSecurity = String.IsNullOrEmpty(options.UserID) || String.IsNullOrEmpty(options.Password);
 				var builder = new SqlConnectionStringBuilder {
-					DataSource = options.Server ?? "localhost",
-					InitialCatalog = options.Database,
-					IntegratedSecurity = options.IntegratedSecurity,
-					UserID = options.UserID ?? "",
-					Password = options.Password ?? ""
+					DataSource = options.Server,
+					IntegratedSecurity = useIntegratedSecurity,
+					UserID = useIntegratedSecurity ? "" : options.UserID,
+					Password = useIntegratedSecurity ? "" : options.Password
 				};
 
 
@@ -56,9 +50,9 @@ namespace DbZip
 						timer.Start();
 
 						var backupTask = new BackupTask(
-							builder.ConnectionString, 
-							builder.InitialCatalog, 
-							options.TransactionLogBackup, 
+							builder.ConnectionString,
+							options.Database,
+							options.TransactionLogBackup,
 							statementTimeout: (int)TimeSpan.FromHours(4).TotalSeconds
 						);
 
@@ -103,12 +97,15 @@ namespace DbZip
 			} catch (Exception ex) {
 				Log.Error(ex.Message, ex);
 				Console.Error.WriteLine(ex.Message);
-				return 1;
+				Environment.Exit(-1);
 			}
 
-			return 0;
+			//Exit ensuring no foreground threads stay running
+			Environment.Exit(0);
 		}
 
+
+		private const int ERROR_BAD_ARGUMENTS = 160;
 
 		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
+using System.Diagnostics.Contracts;
 
 using Ionic.Zip;
 using Ionic.Zlib;
@@ -27,6 +25,8 @@ namespace DbZip.Tasks
 
 		public ZipTask(string fileName, CompressionLevel compressionLevel = CompressionLevel.Default)
 		{
+			Contract.Requires(!String.IsNullOrEmpty(_fileName));
+
 			_fileName = fileName;
 			_compressionLevel = compressionLevel;
 		}
@@ -45,8 +45,8 @@ namespace DbZip.Tasks
 		}
 
 
-		private string _fileName;
-		private CompressionLevel _compressionLevel;
+		private readonly string _fileName;
+		private readonly CompressionLevel _compressionLevel;
 
 	}
 

@@ -80,11 +80,11 @@ namespace DbZip.Tasks
 		}
 
 
-		private string _connectionString;
-		private string _databaseName;
-		private bool _transactionLogBackup;
-		private DateTime _expirationDate;
-		private int _statementTimeout;
+		private readonly string _connectionString;
+		private readonly string _databaseName;
+		private readonly bool _transactionLogBackup;
+		private readonly DateTime _expirationDate;
+		private readonly int _statementTimeout;
 
 	}
 
