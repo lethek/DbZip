@@ -30,7 +30,7 @@ namespace DbZip
 		public string Password { get; set; }
 
 
-		[Option("T", "transactionLog", DefaultValue = false, HelpText = "By default DbZip does a full database backup, however if this option is supplied it will do a transaction-log backup instead")]
+		[Option("T", "TransactionLog", DefaultValue = false, HelpText = "By default DbZip does a full database backup, however if this option is supplied it will do a transaction-log backup instead")]
 		public bool TransactionLogBackup { get; set; }
 
 
