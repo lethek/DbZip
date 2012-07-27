@@ -46,10 +46,10 @@ namespace DbZip.Tasks
 
 				//Validate
 				if (database == null || database.IsSystemObject) {
-					throw new Exception(String.Format("Cannot find a non-system database named {0}", _databaseName));
+					throw new Exception(String.Format("Cannot find a non-system database named [{0}]", _databaseName));
 				}
 				if (_transactionLogBackup && database.DatabaseOptions.RecoveryModel == RecoveryModel.Simple) {
-					throw new Exception(String.Format("Cannot backup the transaction-logs because the {0} database is using the Simple recovery-model", _databaseName));
+					throw new Exception(String.Format("Cannot backup the transaction-logs because the [{0}] database is using the Simple recovery-model", _databaseName));
 				}
 
 				//Prepare backup options
