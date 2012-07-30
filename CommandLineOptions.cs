@@ -25,6 +25,9 @@ namespace DbZip
 		[Option("T", "TransactionLog", DefaultValue = false, HelpText = "By default DbZip does a full database backup, however if this option is supplied it will do a transaction-log backup instead.")]
 		public bool TransactionLogBackup { get; set; }
 
+		[Option("W", "Wait", DefaultValue = false, HelpText = "Tells DbZip that if another backup is already in progress, it should wait until that completes before running this backup. Default behaviour is to skip this backup and exit immediately.")]
+		public bool Wait { get; set; }
+
 
 		[HelpOption]
 		public string GetUsage()

@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 
 using CommandLine;
 
@@ -45,7 +46,7 @@ namespace DbZip
 				try {
 					//BACKUP DATABASE
 					string backupFileName;
-					using (new GlobalMutex()) {
+					using (new GlobalMutex(timeout: (options.Wait ? Timeout.Infinite : 0))) {
 						Log.Info("Backing up: [{0}].[{1}] ({2})", builder.DataSource, options.Database, options.TransactionLogBackup ? "TRANSACTION-LOG" : "FULL");
 						timer.Start();
 
@@ -91,7 +92,9 @@ namespace DbZip
 					Log.Info("-------------------------------------------------------------------------------");
 
 				} catch (TimeoutException) {
-					Log.Trace("A backup is already in progress");
+					const string message = "Another backup is already in progress";
+					Log.Trace(message);
+					Console.Error.WriteLine(message);
 				}
 
 			} catch (Exception ex) {

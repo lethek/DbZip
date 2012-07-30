@@ -40,11 +40,7 @@ namespace DbZip.Threading
 			mutex.SetAccessControl(securitySettings);
 
 			try {
-				if (timeout < 0) {
-					hasHandle = mutex.WaitOne(Timeout.Infinite, false);
-				} else {
-					hasHandle = mutex.WaitOne(timeout, false);
-				}
+				hasHandle = mutex.WaitOne(timeout < 0 ? Timeout.Infinite : timeout, false);
 
 				if (hasHandle == false) {
 					throw new TimeoutException("Timeout waiting for exclusive access on mutex: " + mutexName);
