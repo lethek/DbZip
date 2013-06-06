@@ -11,6 +11,8 @@ using DbZip.Threading;
 
 using NLog;
 
+using SevenZip;
+
 
 namespace DbZip
 {
@@ -68,22 +70,46 @@ namespace DbZip
 					}
 
 
-					//ARCHIVE DATABASE BACKUP
-					Log.Info("Zipping up: {0}", backupFileName);
-					timer.Restart();
-					string archiveFileName = new ZipTask(backupFileName).Run();
-					timer.Stop();
-					Log.Info("Zipped up in {0} ms", timer.ElapsedMilliseconds);
+					if (options.SevenZip) {
+						//ARCHIVE DATABASE BACKUP
+						Log.Info("Zipping up: {0}", backupFileName);
+						timer.Restart();
+						string archiveFileName = new SevenZipTask(backupFileName, CompressionLevel.Low).Run();
+						timer.Stop();
+						Log.Info("Zipped up in {0} ms", timer.ElapsedMilliseconds);
 
+						//VERIFY ARCHIVE AND CLEANUP
+						Log.Info("Verifying: {0}", archiveFileName);
+						timer.Restart();
+						bool isValid = SevenZipTask.Verify(archiveFileName);
+						timer.Stop();
+						Log.Info("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
+						if (isValid) {
+							if (File.Exists(backupFileName)) {
+								Log.Info("Deleting {0}", backupFileName);
+								File.Delete(backupFileName);
+							}
+						}
 
-					//VERIFY ARCHIVE AND CLEANUP
-					Log.Info("Verifying: {0}", archiveFileName);
-					bool isValid = ZipTask.Verify(archiveFileName);
-					Log.Info("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
-					if (isValid) {
-						if (File.Exists(backupFileName)) {
-							Log.Info("Deleting {0}", backupFileName);
-							File.Delete(backupFileName);
+					} else {
+						//ARCHIVE DATABASE BACKUP
+						Log.Info("Zipping up: {0}", backupFileName);
+						timer.Restart();
+						string archiveFileName = new ZipTask(backupFileName).Run();
+						timer.Stop();
+						Log.Info("Zipped up in {0} ms", timer.ElapsedMilliseconds);
+
+						//VERIFY ARCHIVE AND CLEANUP
+						Log.Info("Verifying: {0}", archiveFileName);
+						timer.Restart();
+						bool isValid = ZipTask.Verify(archiveFileName);
+						timer.Stop();
+						Log.Info("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
+						if (isValid) {
+							if (File.Exists(backupFileName)) {
+								Log.Info("Deleting {0}", backupFileName);
+								File.Delete(backupFileName);
+							}
 						}
 					}
 

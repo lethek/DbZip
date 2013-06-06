@@ -28,6 +28,9 @@ namespace DbZip
 		[Option("W", "Wait", DefaultValue = false, HelpText = "Tells DbZip that if another backup is already in progress, it should wait until that completes before running this backup. Default behaviour is to skip this backup and exit immediately.")]
 		public bool Wait { get; set; }
 
+		[Option("7", "SevenZip", DefaultValue = false, HelpText = "Uses 7-zip to compress the database backup instead of Zip.")]
+		public bool SevenZip { get; set; }
+
 
 		[HelpOption]
 		public string GetUsage()

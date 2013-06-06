@@ -70,6 +70,9 @@
     <Reference Include="NLog">
       <HintPath>Packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="SevenZipSharp">
+      <HintPath>Libs\SevenZipSharp\SevenZipSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -79,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tasks\SevenZipTask.cs" />
     <Compile Include="Threading\GlobalMutex.cs" />
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="Threading\SimpleMutex.cs" />
@@ -89,6 +93,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="7z.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
