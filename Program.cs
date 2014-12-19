@@ -29,7 +29,7 @@ namespace DbZip
 
 				//Parse command-line options
 				var options = new CommandLineOptions();
-				var parser = new CommandLineParser(new CommandLineParserSettings(false, true, Console.Error));
+				var parser = new Parser(new ParserSettings(false, true, Console.Error));
 				if (!parser.ParseArguments(args, options)) {
 					Environment.Exit(ERROR_BAD_ARGUMENTS);
 				}
