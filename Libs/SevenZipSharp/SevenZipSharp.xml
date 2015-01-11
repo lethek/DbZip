@@ -2274,7 +2274,7 @@
             7-zip library low-level wrapper.
             </summary>
         </member>
-        <member name="F:SevenZip.SevenZipLibraryManager.syncRoot">
+        <member name="F:SevenZip.SevenZipLibraryManager._syncRoot">
             <summary>
             Synchronization root for all locking.
             </summary>
@@ -2880,15 +2880,20 @@
             Callback to implement the ICodeProgress interface
             </summary>
         </member>
-        <member name="M:SevenZip.ICodeProgress.SetProgress(System.Int64,System.Int64)">
+        <member name="T:SevenZip.Sdk.ICodeProgress">
+            <summary>
+            Callback progress interface.
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.ICodeProgress.SetProgress(System.Int64,System.Int64)">
             <summary>
             Callback progress.
             </summary>
             <param name="inSize">
-            input size. -1 if unknown.
+            Processed input size. -1 if unknown.
             </param>
             <param name="outSize">
-            output size. -1 if unknown.
+            Processed output size. -1 if unknown.
             </param>
         </member>
         <member name="M:SevenZip.LzmaProgressCallback.#ctor(System.Int64,System.EventHandler{SevenZip.ProgressEventArgs})">
@@ -2905,7 +2910,70 @@
             <param name="inSize">The processed input size</param>
             <param name="outSize">The processed output size</param>
         </member>
-        <member name="M:SevenZip.ICoder.Code(System.IO.Stream,System.IO.Stream,System.Int64,System.Int64,SevenZip.ICodeProgress)">
+        <member name="T:SevenZip.Sdk.Buffer.InBuffer">
+            <summary>
+            Implements the input buffer work
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.Buffer.InBuffer.#ctor(System.UInt32)">
+            <summary>
+            Initializes the input buffer
+            </summary>
+            <param name="bufferSize"></param>
+        </member>
+        <member name="M:SevenZip.Sdk.Buffer.InBuffer.Init(System.IO.Stream)">
+            <summary>
+            Initializes the class
+            </summary>
+            <param name="stream"></param>
+        </member>
+        <member name="M:SevenZip.Sdk.Buffer.InBuffer.ReadBlock">
+            <summary>
+            Reads the whole block
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SevenZip.Sdk.Buffer.InBuffer.ReleaseStream">
+            <summary>
+            Releases the stream
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.Buffer.InBuffer.ReadByte(System.Byte@)">
+            <summary>
+            Reads the byte to check it
+            </summary>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SevenZip.Sdk.Buffer.InBuffer.ReadByte">
+            <summary>
+            Reads the next byte
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SevenZip.Sdk.Buffer.InBuffer.GetProcessedSize">
+            <summary>
+            Gets processed size
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SevenZip.Sdk.Buffer.OutBuffer.#ctor(System.UInt32)">
+            <summary>
+            Initializes a new instance of the OutBuffer class
+            </summary>
+            <param name="bufferSize"></param>
+        </member>
+        <member name="T:SevenZip.Sdk.Compression.Lzma.Decoder">
+            <summary>
+            The LZMA decoder class
+            </summary>
+        </member>
+        <member name="T:SevenZip.Sdk.ICoder">
+            <summary>
+            Stream coder interface
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.ICoder.Code(System.IO.Stream,System.IO.Stream,System.Int64,System.Int64,SevenZip.Sdk.ICodeProgress)">
             <summary>
             Codes streams.
             </summary>
@@ -2924,84 +2992,235 @@
             <param name="progress">
             callback progress reference.
             </param>
-            <exception cref="T:SevenZip.DataErrorException">
+            <exception cref="T:SevenZip.Sdk.DataErrorException">
             if input stream is not valid
             </exception>
         </member>
-        <member name="T:SevenZip.DataErrorException">
+        <member name="T:SevenZip.Sdk.ISetDecoderProperties">
+            <summary>
+            The ISetDecoderPropertiesinterface
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.ISetDecoderProperties.SetDecoderProperties(System.Byte[])">
+            <summary>
+            Sets decoder properties
+            </summary>
+            <param name="properties">Array of byte properties</param>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Decoder.#ctor">
+            <summary>
+            Initializes the Lzma Decoder class.
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Decoder.Code(System.IO.Stream,System.IO.Stream,System.Int64,System.Int64,SevenZip.Sdk.ICodeProgress)">
+            <summary>
+            Codes a stream with LZMA algorithm to an output stream
+            </summary>
+            <param name="inStream">The input stream</param>
+            <param name="inSize">The input size</param>
+            <param name="outSize">The output size</param>
+            <param name="outStream">The output stream</param>
+            <param name="progress">Progress interface</param>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Decoder.SetDecoderProperties(System.Byte[])">
+            <summary>
+            Sets decoder properties
+            </summary>
+            <param name="properties">Array of byte properties</param>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Decoder.Train(System.IO.Stream)">
+            <summary>
+            Trains a stream
+            </summary>
+            <param name="stream">The stream to train.</param>
+            <returns>true if Ok; otherwise, false.</returns>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Decoder.LenDecoder.Decode(SevenZip.Sdk.Compression.RangeCoder.Decoder,System.UInt32)">
+            <summary>
+            Decodes the stream
+            </summary>
+            <param name="rangeDecoder">The specified RangeCoder</param>
+            <param name="posState">The position state</param>
+            <returns></returns>
+        </member>
+        <member name="T:SevenZip.Sdk.Compression.Lzma.Encoder">
+            <summary>
+            The LZMA encoder class
+            </summary>
+        </member>
+        <member name="T:SevenZip.Sdk.ISetCoderProperties">
+            <summary>
+            The ISetCoderProperties interface
+            </summary>
+        </member>
+        <member name="T:SevenZip.Sdk.IWriteCoderProperties">
+            <summary>
+            The IWriteCoderProperties interface
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Encoder.#ctor">
+            <summary>
+            Initializes a new instance of the Encoder class
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Encoder.Code(System.IO.Stream,System.IO.Stream,System.Int64,System.Int64,SevenZip.Sdk.ICodeProgress)">
+            <summary>
+            Codes the specified stream
+            </summary>
+            <param name="inStream">The input stream</param>
+            <param name="inSize">The input size</param>
+            <param name="outSize">The output size</param>
+            <param name="outStream">The output stream</param>
+            <param name="progress">The progress callback</param>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Encoder.SetCoderProperties(SevenZip.Sdk.CoderPropId[],System.Object[])">
+            <summary>
+            Sets the coder properties
+            </summary>
+            <param name="propIDs">The property identificators</param>
+            <param name="properties">The array of properties</param>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.Lzma.Encoder.WriteCoderProperties(System.IO.Stream)">
+            <summary>
+            Writes the coder properties
+            </summary>
+            <param name="outStream">The output stream to write the properties to.</param>
+        </member>
+        <member name="T:SevenZip.Sdk.Compression.LZ.InWindow">
+            <summary>
+            Input window class
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.Compression.LZ.InWindow._blockSize">
+            <summary>
+            Size of Allocated memory block
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.Compression.LZ.InWindow._bufferBase">
+            <summary>
+            The pointer to buffer with data
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.Compression.LZ.InWindow._bufferOffset">
+            <summary>
+            Buffer offset value
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.Compression.LZ.InWindow._keepSizeAfter">
+            <summary>
+            How many BYTEs must be kept buffer after _pos
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.Compression.LZ.InWindow._keepSizeBefore">
+            <summary>
+            How many BYTEs must be kept in buffer before _pos
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.Compression.LZ.InWindow._pos">
+            <summary>
+            Offset (from _buffer) of curent byte
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.Compression.LZ.InWindow._streamPos">
+            <summary>
+            Offset (from _buffer) of first not read byte from Stream
+            </summary>
+        </member>
+        <member name="M:SevenZip.Sdk.Compression.LZ.InWindow.GetMatchLen(System.Int32,System.UInt32,System.UInt32)">
+            <summary>
+            index + limit have not to exceed _keepSizeAfter
+            </summary>
+            <param name="index"></param>
+            <param name="distance"></param>
+            <param name="limit"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SevenZip.Sdk.DataErrorException">
             <summary>
             The exception that is thrown when an error in input stream occurs during decoding.
             </summary>
         </member>
-        <member name="T:SevenZip.InvalidParamException">
+        <member name="T:SevenZip.Sdk.InvalidParamException">
             <summary>
             The exception that is thrown when the value of an argument is outside the allowable range.
             </summary>
         </member>
-        <member name="T:SevenZip.CoderPropID">
+        <member name="T:SevenZip.Sdk.CoderPropId">
             <summary>
             Provides the fields that represent properties idenitifiers for compressing.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.DefaultProp">
+        <member name="F:SevenZip.Sdk.CoderPropId.DefaultProp">
             <summary>
             Specifies default property.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.DictionarySize">
+        <member name="F:SevenZip.Sdk.CoderPropId.DictionarySize">
             <summary>
             Specifies size of dictionary.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.UsedMemorySize">
+        <member name="F:SevenZip.Sdk.CoderPropId.UsedMemorySize">
             <summary>
             Specifies size of memory for PPM*.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.Order">
+        <member name="F:SevenZip.Sdk.CoderPropId.Order">
             <summary>
             Specifies order for PPM methods.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.BlockSize">
+        <member name="F:SevenZip.Sdk.CoderPropId.BlockSize">
             <summary>
             Specifies Block Size.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:SevenZip.CoderPropID.PosStateBits" -->
-        <!-- Badly formed XML comment ignored for member "F:SevenZip.CoderPropID.LitContextBits" -->
-        <!-- Badly formed XML comment ignored for member "F:SevenZip.CoderPropID.LitPosBits" -->
-        <member name="F:SevenZip.CoderPropID.NumFastBytes">
+        <member name="F:SevenZip.Sdk.CoderPropId.PosStateBits">
+            <summary>
+            Specifies number of postion state bits for LZMA (0 &lt;= x &lt;= 4).
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.CoderPropId.LitContextBits">
+            <summary>
+            Specifies number of literal context bits for LZMA (0 &lt;= x &lt;= 8).
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.CoderPropId.LitPosBits">
+            <summary>
+            Specifies number of literal position bits for LZMA (0 &lt;= x &lt;= 4).
+            </summary>
+        </member>
+        <member name="F:SevenZip.Sdk.CoderPropId.NumFastBytes">
             <summary>
             Specifies number of fast bytes for LZ*.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.MatchFinder">
+        <member name="F:SevenZip.Sdk.CoderPropId.MatchFinder">
             <summary>
             Specifies match finder. LZMA: "BT2", "BT4" or "BT4B".
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.MatchFinderCycles">
+        <member name="F:SevenZip.Sdk.CoderPropId.MatchFinderCycles">
             <summary>
             Specifies the number of match finder cyckes.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.NumPasses">
+        <member name="F:SevenZip.Sdk.CoderPropId.NumPasses">
             <summary>
             Specifies number of passes.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.Algorithm">
+        <member name="F:SevenZip.Sdk.CoderPropId.Algorithm">
             <summary>
             Specifies number of algorithm.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.NumThreads">
+        <member name="F:SevenZip.Sdk.CoderPropId.NumThreads">
             <summary>
             Specifies the number of threads.
             </summary>
         </member>
-        <member name="F:SevenZip.CoderPropID.EndMarker">
+        <member name="F:SevenZip.Sdk.CoderPropId.EndMarker">
             <summary>
             Specifies mode with end marker.
             </summary>
@@ -3914,11 +4133,6 @@
         <member name="E:SevenZip.SevenZipExtractor.FileExists">
             <summary>
             Occurs during the extraction when a file already exists.
-            </summary>
-        </member>
-        <member name="E:SevenZip.SevenZipExtractor.ContextReleased">
-            <summary>
-            Occurs when the extractor context is released.
             </summary>
         </member>
         <member name="P:SevenZip.SevenZipExtractor.ArchiveFileData">

@@ -2,7 +2,6 @@
 using System.Diagnostics.Contracts;
 
 using SevenZip;
-using SevenZip.Compression;
 
 
 namespace DbZip.Tasks
