@@ -60,6 +60,7 @@ namespace DbZip.Tasks
 					Action = _transactionLogBackup ? BackupActionType.Log : BackupActionType.Database,
 					BackupSetDescription = "Full backup of " + _databaseName,
 					BackupSetName = _databaseName + " Backup",
+					CompressionOption = BackupCompressionOptions.Off,
 					Database = _databaseName,
 					Devices = { new BackupDeviceItem(backupFilename, DeviceType.File) },
 					ExpirationDate = _expirationDate,

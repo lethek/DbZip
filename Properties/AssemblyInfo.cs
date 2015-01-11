@@ -13,7 +13,7 @@ using CommandLine.Text;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DbZip")]
-[assembly: AssemblyCopyright("Copyright © Michael Monsour 2012")]
+[assembly: AssemblyCopyright("Copyright © Michael Monsour 2012-2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
