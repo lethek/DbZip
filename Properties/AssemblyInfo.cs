@@ -13,7 +13,7 @@ using CommandLine.Text;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DbZip")]
-[assembly: AssemblyCopyright("Copyright © Michael Monsour 2012-2014")]
+[assembly: AssemblyCopyright("Copyright © Michael Monsour 2012-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -35,8 +35,8 @@ using CommandLine.Text;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]
+[assembly: AssemblyInformationalVersion("1.2")]
 
 [assembly: AssemblyUsage("Usage: DbZip [-D databaseName] [-S serverAddress] [-U userID] [-P password]")]

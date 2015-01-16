@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using CommandLine;
 using DbZip.Tasks;
@@ -32,11 +33,16 @@ namespace DbZip
 
 
 				//Parse command-line options
-				var options = new CommandLineOptions();
-				var parser = new Parser(new ParserSettings(false, true, Console.Error));
-				if (!parser.ParseArguments(args, options)) {
+				var parser = new Parser(settings => {
+					settings.CaseSensitive = false;
+					settings.HelpWriter = Console.Error;
+				});
+				var result = parser.ParseArguments<Options>(args);
+				if (result.Errors.Any()) {
 					Environment.Exit(ERROR_BAD_ARGUMENTS);
 				}
+				var options = result.Value;
+
 
 				//Build SQL Server connection-string from command-line options
 				bool useIntegratedSecurity = String.IsNullOrEmpty(options.UserID) || String.IsNullOrEmpty(options.Password);
