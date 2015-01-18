@@ -55,9 +55,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommandLine, Version=2.0.0.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\CommandLineParser20.2.0.0.0\lib\net40\CommandLine.dll</HintPath>
+    <Reference Include="FluentCommandLineParser">
+      <HintPath>packages\FluentCommandLineParser.1.4.0\lib\net35\FluentCommandLineParser.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
       <HintPath>packages\DotNetZip.1.9.3\lib\net20\Ionic.Zip.dll</HintPath>
@@ -111,6 +110,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tasks\ZipTask.cs" />
+    <Compile Include="TidyCommandLineOptionFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -10,6 +10,10 @@ namespace DbZip.Tasks
 	public class SevenZipTask
 	{
 
+		public event EventHandler<ProgressEventArgs> Progress;
+		public event EventHandler<EventArgs> Complete;
+
+
 		public static string Zip(string fileName, CompressionLevel compressionLevel = CompressionLevel.Normal)
 		{
 			return new SevenZipTask(fileName, compressionLevel).Run();
@@ -41,8 +45,10 @@ namespace DbZip.Tasks
 				CompressionLevel = _compressionLevel,
 				ArchiveFormat = OutArchiveFormat.SevenZip,
 				EventSynchronization = EventSynchronizationStrategy.AlwaysSynchronous,
-				FastCompression = true
+				//FastCompression = true
 			};
+			compressor.Compressing += Progress;
+			compressor.CompressionFinished += Complete;
 			compressor.CompressFiles(zipFileName, _fileName);
 
 			return zipFileName;

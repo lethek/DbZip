@@ -2,9 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-using CommandLine;
-using CommandLine.Text;
-
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
@@ -38,5 +35,3 @@ using CommandLine.Text;
 [assembly: AssemblyVersion("1.2.0.0")]
 [assembly: AssemblyFileVersion("1.2.0.0")]
 [assembly: AssemblyInformationalVersion("1.2")]
-
-[assembly: AssemblyUsage("Usage: DbZip [-D databaseName] [-S serverAddress] [-U userID] [-P password]")]
