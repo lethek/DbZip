@@ -9,18 +9,15 @@ using DbZip.Jobs;
 using DbZip.Threading;
 
 using Fclp;
-using Fclp.Internals;
 
 using Serilog;
 using Serilog.Events;
-
-using SevenZip;
 
 
 namespace DbZip
 {
 
-	class Program
+	public class Program
 	{
 
 		public static void Main(string[] args)
@@ -31,83 +28,42 @@ namespace DbZip
 				.WriteTo.RollingFile(@"Logs\Log.{Date}.txt")
 				.CreateLogger();
 
+			int exitCode = SystemErrorCodes.SUCCESS;
+
 			try {
 				//Set base-priority of the process so it hopefully doesn't interfere too much with SQL Server
 				Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
+				Log.Debug("Command: {0}", Environment.CommandLine);
 				var parser = new FluentCommandLineParser<Options> { IsCaseSensitive = false };
+				ConfigureCommandLineOptions(parser);
+				var parserResult = parser.Parse(args);
 
-				parser
-					.Setup(o => o.Database)
-					.As('d', "Database")
-					.WithDescription("Sets the name of the database associated with the connection.")
-					.Required();
+				if (parserResult.HasErrors) {
+					exitCode = SystemErrorCodes.ERROR_BAD_ARGUMENTS;
+					Log.Error(parserResult.ErrorText);
 
-				parser
-					.Setup(o => o.Server)
-					.As('s', "Server")
-					.WithDescription("Sets the name or network address of the instance of SQL Server to connect to. Defaults to localhost.")
-					.SetDefault("localhost");
+				} else if (parserResult.HelpCalled) {
+					exitCode = SystemErrorCodes.SUCCESS;
 
-				parser
-					.Setup(o => o.User)
-					.As('u', "User")
-					.WithDescription("Sets the user ID to be used when connecting to SQL Server. If no user ID is supplied then current Windows account credentials are used.");
-
-				parser
-					.Setup(o => o.Password)
-					.As('p', "Password")
-					.WithDescription("Sets the password to be used when connecting to SQL Server. If no password is supplied then current Windows account credentials are used.");
-
-				parser
-					.Setup(o => o.TransactionLogBackup)
-					.As('t', "TransactionLog")
-					.WithDescription("By default DbZip does a full database backup, however if this option is supplied it will do a transaction-log backup instead.")
-					.SetDefault(false);
-
-				parser
-					.Setup(o => o.Wait)
-					.As('w', "Wait")
-					.WithDescription("Tells DbZip that if another backup is already in progress, it should wait until that completes before running this backup. Default behaviour is to skip this backup and exit immediately.")
-					.SetDefault(false);
-
-				parser
-					.Setup(o => o.SevenZip)
-					.As('7', "SevenZip")
-					.WithDescription("Uses 7-zip to compress the database backup instead of Zip.")
-					.SetDefault(false);
-
-				parser.SetupHelp("h", "help", "?").WithCustomFormatter(new TidyCommandLineOptionFormatter {
-					Usage = "Usage: DbZip -D databaseName [-S serverAddress] [-U userID] [-P password]"
-				})
-					.UseForEmptyArgs()
-					.Callback(x => Console.WriteLine(x));
-
-				var result = parser.Parse(args);
-
-				if (result.HasErrors) {
-					Console.WriteLine(result.ErrorText);
-					Environment.Exit(ERROR_BAD_ARGUMENTS);
+				} else {
+					Start(parser.Object);
 				}
-
-				if (result.HelpCalled) {
-					Environment.Exit(0);
-				}
-
-				Execute(parser.Object);
 
 			} catch (Exception ex) {
 				Log.Error(ex.Message, ex);
-				Console.Error.WriteLine(ex.Message);
-				Environment.Exit(-1);
+				exitCode = SystemErrorCodes.ERROR_UNKNOWN;
+
+			} finally {
+				Log.Debug("-------------------------------------------------------------------------------");
 			}
 
 			//Exit ensuring no foreground threads stay running
-			Environment.Exit(0);
+			Environment.Exit(exitCode);
 		}
 
 
-		private static void Execute(Options options)
+		private static void Start(Options options)
 		{
 			//Build SQL Server connection-string from command-line options
 			bool useIntegratedSecurity = String.IsNullOrEmpty(options.User) || String.IsNullOrEmpty(options.Password);
@@ -145,57 +101,23 @@ namespace DbZip
 				}
 
 
-				if (options.SevenZip) {
-					//ARCHIVE DATABASE BACKUP
-					Log.Information("Zipping up: {0}", backupFileName);
-					var task = new SevenZipJob(backupFileName, CompressionLevel.Low);
-					if (Log.IsEnabled(LogEventLevel.Verbose)) {
-						task.Progress += (sender, args) => { Log.Verbose(args.PercentDone + " percent processed."); };
-					}
+				var compressionJob = options.SevenZip
+					? (ICompressionJob)new SevenZipJob(backupFileName)
+					: (ICompressionJob)new ZipJob(backupFileName);
 
-					timer.Restart();
-					string archiveFileName = task.Run();
-					timer.Stop();
-					Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
+				//ARCHIVE DATABASE BACKUP
+				compressionJob.Compress();
 
-					//VERIFY ARCHIVE AND CLEANUP
-					Log.Information("Verifying: {0}", archiveFileName);
-					timer.Restart();
-					bool isValid = SevenZipJob.Verify(archiveFileName);
-					timer.Stop();
-					Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
-					if (isValid) {
-						if (File.Exists(backupFileName)) {
-							Log.Information("Deleting {0}", backupFileName);
-							File.Delete(backupFileName);
-						}
-					}
-
-				} else {
-					//ARCHIVE DATABASE BACKUP
-					Log.Information("Zipping up: {0}", backupFileName);
-					timer.Restart();
-					string archiveFileName = new ZipJob(backupFileName).Run();
-					timer.Stop();
-					Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
-
-					//VERIFY ARCHIVE AND CLEANUP
-					Log.Information("Verifying: {0}", archiveFileName);
-					timer.Restart();
-					bool isValid = ZipJob.Verify(archiveFileName);
-					timer.Stop();
-					Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
-					if (isValid) {
-						if (File.Exists(backupFileName)) {
-							Log.Information("Deleting {0}", backupFileName);
-							File.Delete(backupFileName);
-						}
+				//VERIFY ARCHIVE AND CLEANUP
+				if (compressionJob.Verify()) {
+					if (File.Exists(backupFileName)) {
+						Log.Information("Deleting {0}", backupFileName);
+						File.Delete(backupFileName);
 					}
 				}
 
 
 				Log.Information("Completed");
-				Log.Debug("-------------------------------------------------------------------------------");
 
 			} catch (TimeoutException) {
 				const string message = "Another backup is already in progress";
@@ -205,7 +127,53 @@ namespace DbZip
 		}
 
 
-		private const int ERROR_BAD_ARGUMENTS = 160;
+		private static void ConfigureCommandLineOptions(FluentCommandLineParser<Options> parser)
+		{
+			parser
+				.Setup(o => o.Database)
+				.As('d', "Database")
+				.WithDescription("Sets the name of the database associated with the connection.")
+				.Required();
+
+			parser
+				.Setup(o => o.Server)
+				.As('s', "Server")
+				.WithDescription("Sets the name or network address of the instance of SQL Server to connect to. Defaults to localhost.")
+				.SetDefault("localhost");
+
+			parser
+				.Setup(o => o.User)
+				.As('u', "User")
+				.WithDescription("Sets the user ID to be used when connecting to SQL Server. If no user ID is supplied then current Windows account credentials are used.");
+
+			parser
+				.Setup(o => o.Password)
+				.As('p', "Password")
+				.WithDescription("Sets the password to be used when connecting to SQL Server. If no password is supplied then current Windows account credentials are used.");
+
+			parser
+				.Setup(o => o.TransactionLogBackup)
+				.As('t', "TransactionLog")
+				.WithDescription("By default DbZip does a full database backup, however if this option is supplied it will do a transaction-log backup instead.")
+				.SetDefault(false);
+
+			parser
+				.Setup(o => o.Wait)
+				.As('w', "Wait")
+				.WithDescription("Tells DbZip that if another backup is already in progress, it should wait until that completes before running this backup. Default behaviour is to skip this backup and exit immediately.")
+				.SetDefault(false);
+
+			parser
+				.Setup(o => o.SevenZip)
+				.As('7', "SevenZip")
+				.WithDescription("Uses 7-zip to compress the database backup instead of Zip.")
+				.SetDefault(false);
+
+			parser.SetupHelp("h", "help", "?")
+				.WithCustomFormatter(new TidyCommandLineOptionFormatter { Usage = "Usage: DbZip -D databaseName [-S serverAddress] [-U userID] [-P password]" })
+				.UseForEmptyArgs()
+				.Callback(x => Console.WriteLine(x));
+		}
 
 	}
 

@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
+
+using Serilog;
+using Serilog.Events;
 
 using SevenZip;
 
@@ -7,57 +11,66 @@ using SevenZip;
 namespace DbZip.Jobs
 {
 
-	public class SevenZipJob
+	public class SevenZipJob: ICompressionJob
 	{
 
-		public event EventHandler<ProgressEventArgs> Progress;
-		public event EventHandler<EventArgs> Complete;
+		public string FileName { get; private set; }
+		public string ZipFileName { get; private set; }
+		public CompressionLevel CompressionLevel { get; private set; }
 
 
-		public static string Zip(string fileName, CompressionLevel compressionLevel = CompressionLevel.Normal)
+		public SevenZipJob(string fileName)
+			: this(fileName, CompressionLevel.Low)
 		{
-			return new SevenZipJob(fileName, compressionLevel).Run();
 		}
 
 
-		public static bool Verify(string zipFileName)
+		public SevenZipJob(string fileName, CompressionLevel compressionLevel)
 		{
-			var extractor = new SevenZipExtractor(zipFileName);
-			return extractor.Check();
+			Contract.Requires(!String.IsNullOrEmpty(FileName));
+
+			FileName = fileName;
+			ZipFileName = FileName + ".7z";
+			CompressionLevel = compressionLevel;
 		}
 
 
-		public SevenZipJob(string fileName, CompressionLevel compressionLevel = CompressionLevel.Normal)
+		public void Compress()
 		{
-			Contract.Requires(!String.IsNullOrEmpty(_fileName));
-
-			_fileName = fileName;
-			_compressionLevel = compressionLevel;
-		}
-
-
-		public string Run()
-		{
-			string zipFileName = _fileName + ".7z";
+			Log.Information("Zipping up: {0}", FileName);
 
 			var compressor = new SevenZipCompressor {
 				CompressionMethod = CompressionMethod.Lzma2,
-				CompressionLevel = _compressionLevel,
+				CompressionLevel = CompressionLevel,
 				ArchiveFormat = OutArchiveFormat.SevenZip,
 				EventSynchronization = EventSynchronizationStrategy.AlwaysSynchronous,
 				//FastCompression = true
 			};
-			compressor.Compressing += Progress;
-			compressor.CompressionFinished += Complete;
-			compressor.CompressFiles(zipFileName, _fileName);
 
-			return zipFileName;
+			if (Log.IsEnabled(LogEventLevel.Verbose)) {
+				compressor.Compressing += (sender, args) => { Log.Verbose(args.PercentDone + " percent processed."); };
+			}
+
+			var timer = Stopwatch.StartNew();
+			compressor.CompressFiles(ZipFileName, FileName);
+			timer.Stop();
+			Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
 		}
 
 
-		private readonly string _fileName;
-		private readonly CompressionLevel _compressionLevel;
+		public bool Verify()
+		{
+			Log.Information("Verifying: {0}", ZipFileName);
+			var extractor = new SevenZipExtractor(ZipFileName);
+
+			var timer = Stopwatch.StartNew();
+			bool isValid = extractor.Check();
+			timer.Stop();
+			
+			Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
+
+			return isValid;
+		}
 
 	}
-
 }

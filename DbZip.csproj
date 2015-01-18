@@ -102,7 +102,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Jobs\ICompressionJob.cs" />
     <Compile Include="Jobs\SevenZipJob.cs" />
+    <Compile Include="SystemErrorCodes.cs" />
     <Compile Include="Threading\GlobalMutex.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Threading\SimpleMutex.cs" />

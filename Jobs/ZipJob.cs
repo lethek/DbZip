@@ -1,52 +1,68 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
 using Ionic.Zip;
 using Ionic.Zlib;
 
+using Serilog;
+
 
 namespace DbZip.Jobs
 {
 
-	public class ZipJob
+	public class ZipJob : ICompressionJob
 	{
 
-		public static string Zip(string fileName, CompressionLevel compressionLevel = CompressionLevel.Default)
+		public string FileName { get; private set; }
+		public string ZipFileName { get; private set; }
+		public CompressionLevel CompressionLevel { get; private set; }
+
+
+		public ZipJob(string fileName) : this(fileName, CompressionLevel.Default)
 		{
-			return new ZipJob(fileName, compressionLevel).Run();
 		}
 
 
-		public static bool Verify(string zipFileName)
+		public ZipJob(string fileName, CompressionLevel compressionLevel)
 		{
-			return ZipFile.IsZipFile(zipFileName, true);
+			Contract.Requires(!String.IsNullOrEmpty(fileName));
+
+			FileName = fileName;
+			ZipFileName = FileName + ".zip";
+			CompressionLevel = compressionLevel;
 		}
 
 
-		public ZipJob(string fileName, CompressionLevel compressionLevel = CompressionLevel.Default)
+		public void Compress()
 		{
-			Contract.Requires(!String.IsNullOrEmpty(_fileName));
+			Log.Information("Zipping up: {0}", ZipFileName);
+			var timer = Stopwatch.StartNew();
 
-			_fileName = fileName;
-			_compressionLevel = compressionLevel;
-		}
-
-
-		public string Run()
-		{
-			string zipFileName = _fileName + ".zip";
 			using (var zip = new ZipFile()) {
 				zip.UseZip64WhenSaving = Zip64Option.Always;
-				zip.CompressionLevel = _compressionLevel;
-				zip.AddFile(_fileName, "");
-				zip.Save(zipFileName);
+				zip.CompressionLevel = CompressionLevel;
+				zip.AddFile(FileName, "");
+				zip.Save(ZipFileName);
 			}
-			return zipFileName;
+
+			timer.Stop();
+			Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
 		}
 
 
-		private readonly string _fileName;
-		private readonly CompressionLevel _compressionLevel;
+		public bool Verify()
+		{
+			Log.Information("Verifying: {0}", ZipFileName);
+			var timer = Stopwatch.StartNew();
+			bool isValid = ZipFile.IsZipFile(ZipFileName, true);
+			timer.Stop();
+			Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
+
+
+			return isValid;
+
+		}
 
 	}
 
