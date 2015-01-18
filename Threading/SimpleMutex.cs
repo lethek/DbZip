@@ -41,10 +41,10 @@ namespace DbZip.Threading
 
 			try {
 				hasHandle = mutex.WaitOne(timeout < 0 ? Timeout.Infinite : timeout, false);
-
 				if (hasHandle == false) {
 					throw new TimeoutException("Timeout waiting for exclusive access on mutex: " + mutexName);
 				}
+
 			} catch (AbandonedMutexException) {
 				hasHandle = true;
 			}
@@ -53,8 +53,16 @@ namespace DbZip.Threading
 
 		public void Dispose()
 		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+
+		protected virtual void Dispose(bool disposing)
+		{
 			if (hasHandle && mutex != null) {
 				mutex.ReleaseMutex();
+				mutex.Dispose();
 			}
 		}
 
