@@ -53,7 +53,6 @@ namespace DbZip.Jobs
 
 			var timer = Stopwatch.StartNew();
 			compressor.CompressFiles(ZipFileName, FileName);
-			timer.Stop();
 			Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
 		}
 
@@ -65,10 +64,7 @@ namespace DbZip.Jobs
 
 			var timer = Stopwatch.StartNew();
 			bool isValid = extractor.Check();
-			timer.Stop();
-			
 			Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
-
 			return isValid;
 		}
 

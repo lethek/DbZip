@@ -46,7 +46,6 @@ namespace DbZip.Jobs
 				zip.Save(ZipFileName);
 			}
 
-			timer.Stop();
 			Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
 		}
 
@@ -56,12 +55,8 @@ namespace DbZip.Jobs
 			Log.Information("Verifying: {0}", ZipFileName);
 			var timer = Stopwatch.StartNew();
 			bool isValid = ZipFile.IsZipFile(ZipFileName, true);
-			timer.Stop();
 			Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
-
-
 			return isValid;
-
 		}
 
 	}

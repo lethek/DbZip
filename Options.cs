@@ -1,4 +1,7 @@
-﻿namespace DbZip
+﻿using System;
+
+
+namespace DbZip
 {
 
 	public class Options
@@ -17,6 +20,8 @@
 		public bool Wait { get; set; }
 
 		public bool SevenZip { get; set; }
+
+		public bool UseIntegratedSecurity { get { return String.IsNullOrEmpty(User) || String.IsNullOrEmpty(Password); } }
 
 	}
 

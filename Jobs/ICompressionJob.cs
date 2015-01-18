@@ -5,7 +5,6 @@ namespace DbZip.Jobs
 	{
 		string FileName { get; }
 		string ZipFileName { get; }
-
 		void Compress();
 		bool Verify();
 	}
