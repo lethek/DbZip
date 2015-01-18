@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using DbZip.Tasks;
+
+using DbZip.Jobs;
 using DbZip.Threading;
 
 using Fclp;
@@ -126,7 +127,7 @@ namespace DbZip
 					Log.Information("Backing up: [{0}].[{1}] ({2})", builder.DataSource, options.Database, options.TransactionLogBackup ? "TRANSACTION-LOG" : "FULL");
 					timer.Start();
 
-					var backupTask = new BackupTask(
+					var backupTask = new BackupJob(
 						builder.ConnectionString,
 						options.Database,
 						options.TransactionLogBackup,
@@ -147,7 +148,7 @@ namespace DbZip
 				if (options.SevenZip) {
 					//ARCHIVE DATABASE BACKUP
 					Log.Information("Zipping up: {0}", backupFileName);
-					var task = new SevenZipTask(backupFileName, CompressionLevel.Low);
+					var task = new SevenZipJob(backupFileName, CompressionLevel.Low);
 					if (Log.IsEnabled(LogEventLevel.Verbose)) {
 						task.Progress += (sender, args) => { Log.Verbose(args.PercentDone + " percent processed."); };
 					}
@@ -160,7 +161,7 @@ namespace DbZip
 					//VERIFY ARCHIVE AND CLEANUP
 					Log.Information("Verifying: {0}", archiveFileName);
 					timer.Restart();
-					bool isValid = SevenZipTask.Verify(archiveFileName);
+					bool isValid = SevenZipJob.Verify(archiveFileName);
 					timer.Stop();
 					Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
 					if (isValid) {
@@ -174,14 +175,14 @@ namespace DbZip
 					//ARCHIVE DATABASE BACKUP
 					Log.Information("Zipping up: {0}", backupFileName);
 					timer.Restart();
-					string archiveFileName = new ZipTask(backupFileName).Run();
+					string archiveFileName = new ZipJob(backupFileName).Run();
 					timer.Stop();
 					Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
 
 					//VERIFY ARCHIVE AND CLEANUP
 					Log.Information("Verifying: {0}", archiveFileName);
 					timer.Restart();
-					bool isValid = ZipTask.Verify(archiveFileName);
+					bool isValid = ZipJob.Verify(archiveFileName);
 					timer.Stop();
 					Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
 					if (isValid) {

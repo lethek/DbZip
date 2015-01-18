@@ -7,10 +7,10 @@ using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
 
-namespace DbZip.Tasks
+namespace DbZip.Jobs
 {
 
-	public class BackupTask
+	public class BackupJob
 	{
 
 		public event ServerMessageEventHandler Complete;
@@ -19,11 +19,11 @@ namespace DbZip.Tasks
 
 		public static string Backup(string connectionString, string databaseName, bool transactionLogBackup = false, DateTime? expirationDate = null, int statementTimeout = 0)
 		{
-			return new BackupTask(connectionString, databaseName, transactionLogBackup, expirationDate).Run();
+			return new BackupJob(connectionString, databaseName, transactionLogBackup, expirationDate).Run();
 		}
 
 
-		public BackupTask(string connectionString, string databaseName, bool transactionLogBackup = false, DateTime? expirationDate = null, int statementTimeout = 0)
+		public BackupJob(string connectionString, string databaseName, bool transactionLogBackup = false, DateTime? expirationDate = null, int statementTimeout = 0)
 		{
 			Contract.Requires(!String.IsNullOrEmpty(connectionString));
 			Contract.Requires(!String.IsNullOrEmpty(databaseName));

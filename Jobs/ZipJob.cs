@@ -5,15 +5,15 @@ using Ionic.Zip;
 using Ionic.Zlib;
 
 
-namespace DbZip.Tasks
+namespace DbZip.Jobs
 {
 
-	public class ZipTask
+	public class ZipJob
 	{
 
 		public static string Zip(string fileName, CompressionLevel compressionLevel = CompressionLevel.Default)
 		{
-			return new ZipTask(fileName, compressionLevel).Run();
+			return new ZipJob(fileName, compressionLevel).Run();
 		}
 
 
@@ -23,7 +23,7 @@ namespace DbZip.Tasks
 		}
 
 
-		public ZipTask(string fileName, CompressionLevel compressionLevel = CompressionLevel.Default)
+		public ZipJob(string fileName, CompressionLevel compressionLevel = CompressionLevel.Default)
 		{
 			Contract.Requires(!String.IsNullOrEmpty(_fileName));
 
