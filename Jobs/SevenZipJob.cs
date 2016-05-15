@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.IO;
 
 using Serilog;
 using Serilog.Events;
@@ -32,6 +33,7 @@ namespace DbZip.Jobs
 			FileName = fileName;
 			ZipFileName = FileName + ".7z";
 			CompressionLevel = compressionLevel;
+			SevenZipBase.SetLibraryPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "7za.dll"));
 		}
 
 
