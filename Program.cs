@@ -24,7 +24,7 @@ namespace DbZip
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Debug()
 				.WriteTo.ColoredConsole(LogEventLevel.Information, "{Message}{NewLine}")
-				.WriteTo.RollingFile(@"Logs\Log.{Date}.txt")
+				.WriteTo.RollingFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Logs\Log.{Date}.txt"))
 				.CreateLogger();
 
 			int exitCode = SystemErrorCodes.SUCCESS;
