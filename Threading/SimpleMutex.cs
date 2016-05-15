@@ -75,8 +75,8 @@ namespace DbZip.Threading
 		protected virtual string GenerateMutexName(string mutexId = null)
 		{
 			if (String.IsNullOrEmpty(mutexId)) {
-				string appGuid = ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), false).GetValue(0)).Value.ToString();
-				return String.Format("{{{0}}}", appGuid);
+				string appGuid = ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), false).GetValue(0)).Value;
+				return $"{{{appGuid}}}";
 			}
 			return mutexId;
 		}

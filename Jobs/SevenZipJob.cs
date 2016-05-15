@@ -14,9 +14,9 @@ namespace DbZip.Jobs
 	public class SevenZipJob: ICompressionJob
 	{
 
-		public string FileName { get; private set; }
-		public string ZipFileName { get; private set; }
-		public CompressionLevel CompressionLevel { get; private set; }
+		public string FileName { get; }
+		public string ZipFileName { get; }
+		public CompressionLevel CompressionLevel { get; }
 
 
 		public SevenZipJob(string fileName)
@@ -37,7 +37,7 @@ namespace DbZip.Jobs
 
 		public void Compress()
 		{
-			Log.Information("Zipping up: {0}", FileName);
+			Log.Information($"Zipping up: {FileName}");
 
 			var compressor = new SevenZipCompressor {
 				CompressionMethod = CompressionMethod.Lzma2,
@@ -48,18 +48,18 @@ namespace DbZip.Jobs
 			};
 
 			if (Log.IsEnabled(LogEventLevel.Verbose)) {
-				compressor.Compressing += (sender, args) => { Log.Verbose(args.PercentDone + " percent processed."); };
+				compressor.Compressing += (sender, args) => { Log.Verbose($"{args.PercentDone} percent processed."); };
 			}
 
 			var timer = Stopwatch.StartNew();
 			compressor.CompressFiles(ZipFileName, FileName);
-			Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
+			Log.Information($"Zipped up in {timer.ElapsedMilliseconds} ms");
 		}
 
 
 		public bool Verify()
 		{
-			Log.Information("Verifying: {0}", ZipFileName);
+			Log.Information($"Verifying: {ZipFileName}");
 			var extractor = new SevenZipExtractor(ZipFileName);
 
 			var timer = Stopwatch.StartNew();

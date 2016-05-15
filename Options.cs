@@ -21,8 +21,7 @@ namespace DbZip
 
 		public bool SevenZip { get; set; }
 
-		public bool UseIntegratedSecurity { get { return String.IsNullOrEmpty(User) || String.IsNullOrEmpty(Password); } }
-
+		public bool UseIntegratedSecurity => String.IsNullOrEmpty(User) || String.IsNullOrEmpty(Password);
 	}
 
 }

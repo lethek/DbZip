@@ -27,7 +27,7 @@ namespace DbZip
 		/// <summary>
 		/// If true, outputs a header line above the option list. If false, the header is omitted. Default is true.
 		/// </summary>
-		private bool ShowHeader { get { return Header != null; } }
+		private bool ShowHeader => Header != null;
 
 
 		/// <summary>
@@ -103,7 +103,7 @@ namespace DbZip
 		public string Format(IEnumerable<ICommandLineOption> options)
 		{
 			if (options == null) {
-				throw new ArgumentNullException("options");
+				throw new ArgumentNullException(nameof(options));
 			}
 
 			var list = options.ToList();
@@ -182,9 +182,10 @@ namespace DbZip
 
 		private void AddOptionsImpl(StringBuilder builder, IEnumerable<ICommandLineOption> optionList, int maximumLength)
 		{
-			var maxLength = GetMaxLength(optionList);
+			var options = optionList.ToList();
+			var maxLength = GetMaxLength(options);
 			var remainingSpace = maximumLength - (maxLength + 6);
-			foreach (var option in optionList) {
+			foreach (var option in options) {
 				AddOption(builder, maxLength, option, remainingSpace);
 			}
 		}
@@ -196,7 +197,7 @@ namespace DbZip
 			var optionName = new StringBuilder(maxLength);
 			if (option.HasShortName) {
 				optionName.Append('-');
-				optionName.AppendFormat("{0}", option.ShortName);
+				optionName.Append(option.ShortName);
 				if (option.HasLongName) {
 					optionName.Append(", ");
 				}
@@ -204,7 +205,7 @@ namespace DbZip
 
 			if (option.LongName.Length > 0) {
 				optionName.Append("--");
-				optionName.AppendFormat("{0}", option.LongName);
+				optionName.Append(option.LongName);
 			}
 
 			builder.Append(

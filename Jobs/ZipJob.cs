@@ -14,9 +14,9 @@ namespace DbZip.Jobs
 	public class ZipJob : ICompressionJob
 	{
 
-		public string FileName { get; private set; }
-		public string ZipFileName { get; private set; }
-		public CompressionLevel CompressionLevel { get; private set; }
+		public string FileName { get; }
+		public string ZipFileName { get; }
+		public CompressionLevel CompressionLevel { get; }
 
 
 		public ZipJob(string fileName) : this(fileName, CompressionLevel.Default)
@@ -36,7 +36,7 @@ namespace DbZip.Jobs
 
 		public void Compress()
 		{
-			Log.Information("Zipping up: {0}", ZipFileName);
+			Log.Information($"Zipping up: {ZipFileName}");
 			var timer = Stopwatch.StartNew();
 
 			using (var zip = new ZipFile()) {
@@ -46,13 +46,13 @@ namespace DbZip.Jobs
 				zip.Save(ZipFileName);
 			}
 
-			Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
+			Log.Information($"Zipped up in {timer.ElapsedMilliseconds} ms");
 		}
 
 
 		public bool Verify()
 		{
-			Log.Information("Verifying: {0}", ZipFileName);
+			Log.Information($"Verifying: {ZipFileName}");
 			var timer = Stopwatch.StartNew();
 			bool isValid = ZipFile.IsZipFile(ZipFileName, true);
 			Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);

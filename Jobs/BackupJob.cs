@@ -46,17 +46,17 @@ namespace DbZip.Jobs
 
 				//Validate
 				if (database == null || database.IsSystemObject) {
-					throw new Exception(String.Format("Cannot find a non-system database named [{0}]", _databaseName));
-				}
+					throw new Exception($"Cannot find a non-system database named [{_databaseName}]");
+				}	
 				if (_transactionLogBackup && database.DatabaseOptions.RecoveryModel == RecoveryModel.Simple) {
-					throw new Exception(String.Format("Cannot backup the transaction-logs because the [{0}] database is using the Simple recovery-model", _databaseName));
+					throw new Exception($"Cannot backup the transaction-logs because the [{_databaseName}] database is using the Simple recovery-model");
 				}
 
 				//Prepare backup options
 				string backupExt = _transactionLogBackup ? "trn" : "bak";
-				string backupFilename = String.Format("{0}_backup_{1}.{2}", _databaseName, DateTime.Now.ToString("yyyy_MM_dd_HHmmss"), backupExt);
+				string backupFilename = $"{_databaseName}_backup_{DateTime.Now.ToString("yyyy_MM_dd_HHmmss")}.{backupExt}";
 
-				var backup = new Backup() {
+				var backup = new Backup {
 					Action = _transactionLogBackup ? BackupActionType.Log : BackupActionType.Database,
 					BackupSetDescription = "Full backup of " + _databaseName,
 					BackupSetName = _databaseName + " Backup",
