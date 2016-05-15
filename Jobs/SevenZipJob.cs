@@ -39,29 +39,29 @@ namespace DbZip.Jobs
 
 		public void Compress()
 		{
-			Log.Information($"Zipping up: {FileName}");
+			Log.Information("Zipping up: {0}", FileName);
 
 			var compressor = new SevenZipCompressor {
 				CompressionMethod = CompressionMethod.Lzma2,
 				CompressionLevel = CompressionLevel,
 				ArchiveFormat = OutArchiveFormat.SevenZip,
-				EventSynchronization = EventSynchronizationStrategy.AlwaysSynchronous,
-				//FastCompression = true
+				EventSynchronization = EventSynchronizationStrategy.AlwaysAsynchronous,
+				FastCompression = false
 			};
 
 			if (Log.IsEnabled(LogEventLevel.Verbose)) {
-				compressor.Compressing += (sender, args) => { Log.Verbose($"{args.PercentDone} percent processed."); };
+				compressor.Compressing += (sender, args) => { Log.Verbose("{0} percent processed.", args.PercentDone); };
 			}
 
 			var timer = Stopwatch.StartNew();
 			compressor.CompressFiles(ZipFileName, FileName);
-			Log.Information($"Zipped up in {timer.ElapsedMilliseconds} ms");
+			Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
 		}
 
 
 		public bool Verify()
 		{
-			Log.Information($"Verifying: {ZipFileName}");
+			Log.Information("Verifying: {0}", ZipFileName);
 			var extractor = new SevenZipExtractor(ZipFileName);
 
 			var timer = Stopwatch.StartNew();

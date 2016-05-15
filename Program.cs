@@ -33,7 +33,7 @@ namespace DbZip
 				//Set base-priority of the process so it hopefully doesn't interfere too much with SQL Server
 				Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-				Log.Verbose($"Command: {Environment.CommandLine}");
+				Log.Verbose("Command: {0}", Environment.CommandLine);
 				var parser = new FluentCommandLineParser<Options> { IsCaseSensitive = false };
 				ConfigureCommandLineOptions(parser);
 				var parserResult = parser.Parse(args);
@@ -93,7 +93,7 @@ namespace DbZip
 
 					backupFileName = backupTask.Run();
 
-					Log.Information($"Backed up in {timer.ElapsedMilliseconds} ms");
+					Log.Information("Backed up in {0} ms", timer.ElapsedMilliseconds);
 				}
 
 
@@ -107,7 +107,7 @@ namespace DbZip
 				//VERIFY ARCHIVE AND CLEANUP
 				if (compressionJob.Verify()) {
 					if (File.Exists(backupFileName)) {
-						Log.Information($"Deleting {backupFileName}");
+						Log.Information("Deleting {0}", backupFileName);
 						File.Delete(backupFileName);
 					}
 				}
