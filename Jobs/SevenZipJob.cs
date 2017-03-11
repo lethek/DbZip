@@ -48,6 +48,7 @@ namespace DbZip.Jobs
 				EventSynchronization = EventSynchronizationStrategy.AlwaysAsynchronous,
 				FastCompression = false
 			};
+			compressor.CustomParameters.Add("mt", "on");
 
 			if (Log.IsEnabled(LogEventLevel.Verbose)) {
 				compressor.Compressing += (sender, args) => { Log.Verbose("{0} percent processed.", args.PercentDone); };
@@ -63,7 +64,7 @@ namespace DbZip.Jobs
 		{
 			Log.Information("Verifying: {0}", ZipFileName);
 			var extractor = new SevenZipExtractor(ZipFileName);
-
+			
 			var timer = Stopwatch.StartNew();
 			bool isValid = extractor.Check();
 			Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);

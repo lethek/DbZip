@@ -54,11 +54,11 @@ namespace DbZip.Jobs
 
 				//Prepare backup options
 				string backupExt = _transactionLogBackup ? "trn" : "bak";
-				string backupFilename = $"{_databaseName}_backup_{DateTime.Now.ToString("yyyy_MM_dd_HHmmss")}.{backupExt}";
+				string backupFilename = $"{_databaseName}_backup_{DateTime.Now:yyyy_MM_dd_HHmmss}.{backupExt}";
 
 				var backup = new Backup {
 					Action = _transactionLogBackup ? BackupActionType.Log : BackupActionType.Database,
-					BackupSetDescription = "Full backup of " + _databaseName,
+					BackupSetDescription = (_transactionLogBackup ? "Transaction log backup of " : "Full backup of ") + _databaseName,
 					BackupSetName = _databaseName + " Backup",
 					CompressionOption = BackupCompressionOptions.Off,
 					Database = _databaseName,

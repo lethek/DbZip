@@ -23,7 +23,7 @@ namespace DbZip
 		{
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Debug()
-				.WriteTo.ColoredConsole(LogEventLevel.Information, "{Message}{NewLine}")
+				.WriteTo.LiterateConsole(LogEventLevel.Information, "{Message}{NewLine}")
 				.WriteTo.RollingFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Logs\Log.{Date}.txt"))
 				.CreateLogger();
 
@@ -50,7 +50,7 @@ namespace DbZip
 				}
 
 			} catch (Exception ex) {
-				Log.Error(ex.Message, ex);
+				Log.Error(ex, ex.Message);
 				exitCode = SystemErrorCodes.ERROR_UNKNOWN;
 
 			} finally {
