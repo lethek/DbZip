@@ -1,6 +1,7 @@
 ##### EXCLUDES #####
 
 # Project Agnostic
+.vs/
 .svn/
 _ReSharper.*/
 /_UpgradeReport_Files/
