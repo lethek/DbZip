@@ -23,8 +23,8 @@ namespace DbZip
 		{
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Debug()
-				.WriteTo.LiterateConsole(LogEventLevel.Information, "{Message}{NewLine}")
-				.WriteTo.RollingFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Logs\Log.{Date}.txt"))
+				.WriteTo.Console(LogEventLevel.Information, "{Message}{NewLine}")
+                .WriteTo.File(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Logs\Log.{Date}.txt"), rollingInterval:RollingInterval.Day)
 				.CreateLogger();
 
 			int exitCode = SystemErrorCodes.SUCCESS;
