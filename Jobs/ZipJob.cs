@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics;
 
 using Ionic.Zip;
 using Ionic.Zlib;
@@ -26,8 +24,6 @@ namespace DbZip.Jobs
 
         public ZipJob(string fileName, CompressionLevel compressionLevel)
         {
-            Contract.Requires(!String.IsNullOrEmpty(fileName));
-
             FileName = fileName;
             ZipFileName = FileName + ".zip";
             CompressionLevel = compressionLevel;

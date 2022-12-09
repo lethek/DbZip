@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 using System.IO;
 
 using Microsoft.SqlServer.Management.Common;
@@ -25,9 +24,6 @@ namespace DbZip.Jobs
 
         public BackupJob(string connectionString, string databaseName, bool transactionLogBackup = false, DateTime? expirationDate = null, int statementTimeout = 0)
         {
-            Contract.Requires(!String.IsNullOrEmpty(connectionString));
-            Contract.Requires(!String.IsNullOrEmpty(databaseName));
-
             _connectionString = connectionString;
             _databaseName = databaseName;
             _transactionLogBackup = transactionLogBackup;

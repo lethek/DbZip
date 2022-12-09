@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
 
@@ -29,8 +28,6 @@ namespace DbZip.Jobs
 
         public SevenZipJob(string fileName, CompressionLevel compressionLevel)
         {
-            Contract.Requires(!String.IsNullOrEmpty(FileName));
-
             FileName = fileName;
             ZipFileName = FileName + ".7z";
             CompressionLevel = compressionLevel;
