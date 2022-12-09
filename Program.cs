@@ -33,7 +33,7 @@ namespace DbZip
                 //Set base-priority of the process so it hopefully doesn't interfere too much with SQL Server
                 Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-                Log.Verbose("Command: {0}", Environment.CommandLine);
+                Log.Verbose("Command: {CommandLine}", Environment.CommandLine);
                 var parser = new FluentCommandLineParser<Options> { IsCaseSensitive = false };
                 ConfigureCommandLineOptions(parser);
                 var parserResult = parser.Parse(args);
@@ -77,7 +77,7 @@ namespace DbZip
                 //BACKUP DATABASE
                 string backupFileName;
                 using (new GlobalMutex(timeout: (options.Wait ? Timeout.Infinite : 0))) {
-                    Log.Information("Backing up: [{0}].[{1}] ({2})", builder.DataSource, options.Database, options.TransactionLogBackup ? "TRANSACTION-LOG" : "FULL");
+                    Log.Information("Backing up: [{DataSource}].[{Database}] ({BackupType})", builder.DataSource, options.Database, options.TransactionLogBackup ? "TRANSACTION-LOG" : "FULL");
                     var timer = Stopwatch.StartNew();
 
                     var backupTask = new BackupJob(
@@ -93,7 +93,7 @@ namespace DbZip
 
                     backupFileName = backupTask.Run();
 
-                    Log.Information("Backed up in {0} ms", timer.ElapsedMilliseconds);
+                    Log.Information("Backed up in {ElapsedMilliseconds} ms", timer.ElapsedMilliseconds);
                 }
 
 
@@ -107,7 +107,7 @@ namespace DbZip
                 //VERIFY ARCHIVE AND CLEANUP
                 if (compressionJob.Verify()) {
                     if (File.Exists(backupFileName)) {
-                        Log.Information("Deleting {0}", backupFileName);
+                        Log.Information("Deleting {BackupFileName}", backupFileName);
                         File.Delete(backupFileName);
                     }
                 }

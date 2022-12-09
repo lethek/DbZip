@@ -17,9 +17,7 @@ namespace DbZip.Jobs
 
 
         public static string Backup(string connectionString, string databaseName, bool transactionLogBackup = false, DateTime? expirationDate = null, int statementTimeout = 0)
-        {
-            return new BackupJob(connectionString, databaseName, transactionLogBackup, expirationDate).Run();
-        }
+            => new BackupJob(connectionString, databaseName, transactionLogBackup, expirationDate).Run();
 
 
         public BackupJob(string connectionString, string databaseName, bool transactionLogBackup = false, DateTime? expirationDate = null, int statementTimeout = 0)

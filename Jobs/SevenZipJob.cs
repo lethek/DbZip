@@ -39,7 +39,7 @@ namespace DbZip.Jobs
 
         public void Compress()
         {
-            Log.Information("Zipping up: {0}", FileName);
+            Log.Information("Zipping up: {ZipFileName}", ZipFileName);
 
             var compressor = new SevenZipCompressor {
                 CompressionMethod = CompressionMethod.Lzma2,
@@ -51,12 +51,12 @@ namespace DbZip.Jobs
             compressor.CustomParameters.Add("mt", "on");
 
             if (Log.IsEnabled(LogEventLevel.Verbose)) {
-                compressor.Compressing += (sender, args) => { Log.Verbose("{0} percent processed.", args.PercentDone); };
+                compressor.Compressing += (sender, args) => { Log.Verbose("{PercentDone} percent processed.", args.PercentDone); };
             }
 
             var timer = Stopwatch.StartNew();
             compressor.CompressFiles(ZipFileName, FileName);
-            Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
+            Log.Information("Zipped up in {ElapsedMilliseconds} ms", timer.ElapsedMilliseconds);
         }
 
 
@@ -67,7 +67,7 @@ namespace DbZip.Jobs
 
             var timer = Stopwatch.StartNew();
             bool isValid = extractor.Check();
-            Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
+            Log.Information("Verification {VerificationStatus} in {ElapsedMilliseconds} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
             return isValid;
         }
 

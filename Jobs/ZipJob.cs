@@ -32,7 +32,7 @@ namespace DbZip.Jobs
 
         public void Compress()
         {
-            Log.Information("Zipping up: {0}", ZipFileName);
+            Log.Information("Zipping up: {ZipFileName}", ZipFileName);
             var timer = Stopwatch.StartNew();
 
             using (var zip = new ZipFile()) {
@@ -42,16 +42,16 @@ namespace DbZip.Jobs
                 zip.Save(ZipFileName);
             }
 
-            Log.Information("Zipped up in {0} ms", timer.ElapsedMilliseconds);
+            Log.Information("Zipped up in {ElapsedMilliseconds} ms", timer.ElapsedMilliseconds);
         }
 
 
         public bool Verify()
         {
-            Log.Information("Verifying: {0}", ZipFileName);
+            Log.Information("Verifying: {ZipFileName}", ZipFileName);
             var timer = Stopwatch.StartNew();
             bool isValid = ZipFile.IsZipFile(ZipFileName, true);
-            Log.Information("Verification {0} in {1} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
+            Log.Information("Verification {VerificationStatus} in {ElapsedMilliseconds} ms", isValid ? "passed" : "failed", timer.ElapsedMilliseconds);
             return isValid;
         }
 

@@ -6,7 +6,6 @@ namespace DbZip
 
     public class Options
     {
-
         public string Database { get; set; }
 
         public string Server { get; set; }
