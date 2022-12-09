@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.IO;
 
+using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
